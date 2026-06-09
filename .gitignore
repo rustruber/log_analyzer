@@ -49,6 +49,6 @@ dmypy.json
 # Documentation build output
 site/
 
-# IDE files
-# .idea/
-# .vscode/
+IDE files
+.idea/
+.vscode/
