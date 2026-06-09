@@ -61,17 +61,30 @@ log_analyzer = "log_analyzer.cli:app"
 # rules.TY015 = "warn"  # For invalid-argument-type, warn instead of error.
 
 [tool.ruff]
-line-length = 120
+line-length = 120 # твоя любимая длина строки
+target-version = "py313"  # твоя версия Python
 
 [tool.ruff.lint]
 select = [
-    "E",   # pycodestyle errors
-    "W",   # pycodestyle warnings
-    "F",   # Pyflakes
-    "I",   # isort
-    "B",   # flake8-bugbear
-    "UP",  # pyupgrade
+    "E",    # ошибки pycodestyle
+    "W",    # предупреждения pycodestyle
+    "F",    # ошибки Pyflakes (неиспользуемые импорты, переменные)
+    "I",    # сортировка импортов (isort)
+    "UP",   # предложения по обновлению синтаксиса (pyupgrade)
+    "B",    # поиск сомнительных конструкций (flake8-bugbear)
+    "C4",   # улучшения для генераторов списков и словарей
+    "T20",  # запрет на отладочные print()
+    "T10",  # запрет на отладочный assert (на проде)
 ]
+
+# От каких правил можно отказаться
+ignore = [
+    "E501",  # не ругаться на слишком длинные строки (этим займется форматтер)
+    "B008",  # разрешить вызовы функций в аргументах по умолчанию
+]
+
+[tool.ruff.format]
+quote-style = "double"  # использовать двойные кавычки
 
 [tool.coverage.run]
 branch = true

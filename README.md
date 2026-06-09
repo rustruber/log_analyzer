@@ -2,7 +2,7 @@
 
 ![PyPI version](https://img.shields.io/pypi/v/log_analyzer.svg)
 
-Cервис, формирующий статистический отчет на основании парсинга логов
+Cервис, формирующий статистический отчет на основании парсинга логов NGINX
 
 * [GitHub](https://github.com/rustruber/log_analyzer/) | [PyPI](https://pypi.org/project/log_analyzer/) | [Documentation](https://rustruber.github.io/log_analyzer/)
 * Created by [setter](https://lphp.ru) | GitHub [@rustruber](https://github.com/rustruber) | PyPI [@setter](https://pypi.org/user/setter/)
