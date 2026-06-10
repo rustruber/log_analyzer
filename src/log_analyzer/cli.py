@@ -1,8 +1,11 @@
+import typer
 from rich.console import Console
+
 from log_analyzer import utils
 
 app = typer.Typer()
 console = Console()
+
 
 # Количество запросов — сколько всего строк с временем ответа
 # Среднее время — сумма всех времён / количество
@@ -17,4 +20,3 @@ def main(log_file: str) -> None:
 
 if __name__ == "__main__":
     app()
-

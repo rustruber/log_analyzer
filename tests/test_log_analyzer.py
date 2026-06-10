@@ -2,6 +2,7 @@
 
 from log_analyzer.utils import calculate_metrics
 
+
 def test_calculate_metrics():
     """Проверяет, что calculate_metrics правильно считает метрики."""
     times = [0.1, 0.2, 0.3, 0.4, 0.5, 1.0, 2.0, 3.0, 4.0, 5.0]
@@ -13,4 +14,3 @@ def test_calculate_metrics():
     assert result["perc_95"] == 5.0
     assert result["min"] == 0.1
     assert result["max"] == 5.0
-

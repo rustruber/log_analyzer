@@ -48,4 +48,3 @@ def do_something_useful(log_file: str, console) -> None:
     # # 95-й персентиль
     # time_perc = times[int(0.95 * count)]
     # print(f"95-й персентиль (5% самых медленных запросов были медленнее {time_perc} секунд)")
-
