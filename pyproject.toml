@@ -113,19 +113,6 @@ testpaths = ["tests"]
 package = true
 default-groups = ["dev"]
 
-[[tool.poetry.source]]
-name = "nexus"
-url = "http://localhost:8081/repository/pypi-proxy"
-priority = "primary"
-
-[[tool.uv.index]]
-url = "http://localhost:8081/repository/pypi-proxy"
-
-[[tool.uv.index]]
-name = "nexus"
-url = "http://localhost:8081/repository/pypi-proxy/simple"
-default = true
-
 [tool.hatch.build.targets.wheel]
 packages = ["src/log_analyzer"]
 
