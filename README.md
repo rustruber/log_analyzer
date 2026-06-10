@@ -22,7 +22,13 @@ Documentation is built with [Zensical](https://zensical.org/) and deployed to Gi
 
 API documentation is auto-generated from docstrings using [mkdocstrings](https://mkdocstrings.github.io/).
 
+<<<<<<< HEAD
 Docs deploy automatically on push to `main` via GitHub Actions. To enable this, go to your repo's Settings > Pages and set the source to **GitHub Actions**.
+=======
+Docs deploy automatically on push to `main` via GitHub Actions.
+To enable this, go to your repo's Settings > Pages and set the source to **GitHub Actions**.
+
+>>>>>>> 100705c671bc257c3c9f6364170f756ed69bce84
 
 ## Development
 

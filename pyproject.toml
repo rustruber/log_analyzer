@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "log_analyzer"
+name = "log-analyzer-cli"
 version = "0.1.0"
 description = "Cервис, формирующий статистический отчет на основании парсинга логов"
 readme = "README.md"
@@ -20,8 +20,8 @@ classifiers = [
 ]
 license = {text = "MIT"}
 dependencies = [
-  "typer",
-  "rich",
+    "typer >= 0.26.7",
+    "rich"
 ]
 requires-python = ">= 3.12"
 
@@ -112,3 +112,23 @@ testpaths = ["tests"]
 [tool.uv]
 package = true
 default-groups = ["dev"]
+
+[[tool.poetry.source]]
+name = "nexus"
+url = "http://localhost:8081/repository/pypi-proxy"
+priority = "primary"
+
+[[tool.uv.index]]
+url = "http://localhost:8081/repository/pypi-proxy"
+
+[[tool.uv.index]]
+name = "nexus"
+url = "http://localhost:8081/repository/pypi-proxy/simple"
+default = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/log_analyzer"]
+
+
+
+
