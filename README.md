@@ -1,6 +1,10 @@
 # log_analyzer
 
-![PyPI version](https://img.shields.io/pypi/v/log_analyzer.svg)
+![PyPI version](https://img.shields.io/pypi/v/log-analyzer-cli.svg)
+[![CI](https://github.com/rustruber/log_analyzer/actions/workflows/ci.yml/badge.svg)](https://github.com/rustruber/log_analyzer/actions/workflows/ci.yml)
+[![PyPI version](https://img.shields.io/pypi/v/log-analyzer-cli.svg)](https://pypi.org/project/log-analyzer-cli/)
+[![Python versions](https://img.shields.io/pypi/pyversions/log-analyzer-cli.svg)](https://pypi.org/project/log-analyzer-cli/)
+[![License](https://img.shields.io/github/license/rustruber/log_analyzer.svg)](https://github.com/rustruber/log_analyzer/blob/main/LICENSE)
 
 Cервис, формирующий статистический отчет на основании парсинга логов NGINX
 
