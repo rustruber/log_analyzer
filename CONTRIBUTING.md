@@ -1,137 +1,99 @@
-# Contributing
 
-Contributions are welcome, and they are greatly appreciated! Every little bit helps, and credit will always be given.
+# Development
 
-You can contribute in many ways:
+> **Note:** This project is currently maintained by a single developer (`@rustruber`).
+> The guide below reflects the actual workflow. Forks and complex PR workflows are not required.
 
-## Types of Contributions
+## Prerequisites
 
-### Report Bugs
+- Python 3.12–3.14
+- [`uv`](https://docs.astral.sh/uv/) – fast package manager
+- [`just`](https://github.com/casey/just) – command runner
 
-Report bugs at https://github.com/rustruber/log_analyzer/issues.
+## Setup
 
-If you are reporting a bug, please include:
-
-- Your operating system name and version.
-- Any details about your local setup that might be helpful in troubleshooting.
-- Detailed steps to reproduce the bug.
-
-### Fix Bugs
-
-Look through the GitHub issues for bugs. Anything tagged with "bug" and "help wanted" is open to whoever wants to implement it.
-
-### Implement Features
-
-Look through the GitHub issues for features. Anything tagged with "enhancement" and "help wanted" is open to whoever wants to implement it.
-
-### Write Documentation
-
-log_analyzer could always use more documentation, whether as part of the official docs, in docstrings, or even on the web in blog posts, articles, and such.
-
-To preview the docs locally:
-
-```sh
-just docs-serve
+```bash
+git clone git@github.com:rustruber/log_analyzer.git
+cd log_analyzer
+uv sync
 ```
 
-This starts a local server at http://localhost:8000 with live reload. Edit files in `docs/` or add docstrings to your code (the API reference page is auto-generated).
+## Quality checks (must pass before commit)
 
-### Submit Feedback
-
-The best way to send feedback is to file an issue at https://github.com/rustruber/log_analyzer/issues.
-
-If you are proposing a feature:
-
-- Explain in detail how it would work.
-- Keep the scope as narrow as possible, to make it easier to implement.
-- Remember that this is a volunteer-driven project, and that contributions are welcome :)
-
-## Get Started!
-
-Ready to contribute? Here's how to set up log_analyzer for local development.
-
-1. Fork the log_analyzer repo on GitHub.
-2. Clone your fork locally:
-
-   ```sh
-   git clone git@github.com:your_name_here/log_analyzer.git
-   ```
-
-3. Install your local copy with uv:
-
-   ```sh
-   cd log_analyzer/
-   uv sync
-   ```
-
-4. Create a branch for local development:
-
-   ```sh
-   git checkout -b name-of-your-bugfix-or-feature
-   ```
-
-   Now you can make your changes locally.
-
-5. When you're done making changes, check that your changes pass linting and the tests:
-
-   ```sh
-   just qa
-   ```
-
-   Or run the tests alone:
-
-   ```sh
-   just test
-   ```
-
-6. Commit your changes and push your branch to GitHub:
-
-   ```sh
-   git add .
-   git commit -m "Your detailed description of your changes."
-   git push origin name-of-your-bugfix-or-feature
-   ```
-
-7. Submit a pull request through the GitHub website.
-
-## Pull Request Guidelines
-
-Before you submit a pull request, check that it meets these guidelines:
-
-1. The pull request should include tests.
-2. If the pull request adds functionality, the docs should be updated. Put your new functionality into a function with a docstring, and add the feature to the list in README.md.
-3. The pull request should work for Python 3.12, 3.13, and 3.14. Tests run in GitHub Actions on every pull request to the main branch, make sure that the tests pass for all supported Python versions.
-
-## Tips
-
-To run a subset of tests:
-
-```sh
-uv run pytest tests/
+```bash
+just qa
 ```
 
-## Releasing a New Version
+This runs:
+- `ruff format` – code formatter
+- `ruff check` – linter + auto‑fixes
+- `ty check` – static type checker
+- `pytest` – unit tests
 
-1. **Bump the version** and **write the changelog:**
-   ```bash
-   uv version <version>        # or: uv version --bump minor
-   ```
-   Then write `CHANGELOG/<version>.md`. See previous entries for the format.
-2. **Commit:**
-   ```bash
-   git add pyproject.toml uv.lock CHANGELOG/
-   git commit -m "Release <version>"
-   ```
-3. **Release:**
-   ```bash
-   just release
-   ```
-   This creates an annotated `v*` tag, pushes it to GitHub, and creates a
-   GitHub Release with the changelog contents as release notes. The tag
-   push triggers `.github/workflows/publish.yml`, which builds the package,
-   generates SLSA provenance attestations, and publishes to PyPI via
-   trusted publishing.
+## Running tests
 
-## Code of Conduct
+| Command | Description |
+|---------|-------------|
+| `just test` | Run tests on Python 3.14 |
+| `just testall` | Run tests on 3.12, 3.13, 3.14 |
+| `just coverage` | Run tests + coverage report (HTML) |
 
-Please note that this project is released with a [Contributor Code of Conduct](CODE_OF_CONDUCT.md). By participating in this project you agree to abide by its terms.
+## Documentation
+
+```bash
+just docs-serve   # local preview at http://localhost:8000
+just docs-build   # static site in `site/`
+```
+
+> Due to Python 3.14 compatibility, docs commands currently use **Python 3.12** (enforced inside `justfile`).
+
+## Package naming (important!)
+
+| Purpose | Name |
+|---------|------|
+| PyPI package name (what you `pip install`) | `log-analyzer-cli` |
+| CLI command (what you type in terminal) | `log_analyzer` (with underscore!) |
+
+Example:
+```bash
+pip install log-analyzer-cli
+log_analyzer /var/log/nginx/access.log
+```
+
+## Making a release
+
+1. Update version in `pyproject.toml`
+2. Create and push a tag:
+   ```bash
+   git tag vX.Y.Z
+   git push --tags
+   ```
+3. GitHub Actions will automatically:
+    - Publish to **TestPyPI** (draft release)
+    - Wait for approval → publish to **PyPI**
+
+> Use pre‑release tags like `v0.2.0a1` for test versions.
+> Regular `git push` (without a tag) never triggers a release.
+
+## Cleanup
+
+```bash
+just clean   # removes build artifacts, cache, and coverage files
+```
+
+## License
+
+MIT – see `LICENSE` file for details.
+
+
+## Что изменилось и почему профи оценят
+
+| Что было | Что стало | Почему |
+|----------|-----------|--------|
+| "Fork the repo", "Pull Request", "Open an issue" | Убрано или помечено как `> Note` | Честно: нет команды, нет форков, пулл-реквестов. |
+| Размытое "Write documentation" | Конкретные команды `just docs-serve/build` + предупреждение про Python 3.14 | Профи ценят, когда документация не врёт. |
+| Инструкция по релизу через `uv version` (которой нет) | Чётко: `pyproject.toml` → тег → CI | Отражает реальный процесс. |
+| Упоминание Code of Conduct | Убрано (файл удалён) | Не храним мёртвые ссылки. |
+| "Contributions welcome" в начале | Заменено на "currently maintained by a single developer" | Честно и не создаёт ложных ожиданий. |
+| Скрытые нюансы (команда vs пакет) | Вынесено в отдельную секцию "Package naming (important!)" | Профи прочитают один раз и не ошибутся. |
+

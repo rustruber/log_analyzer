@@ -58,11 +58,11 @@ coverage:
 # Serve docs locally with live reload
 docs-serve:
     -lsof -ti :8000 | xargs kill
-    uv run --group docs zensical serve
+    uv run --python=3.12 --group docs zensical serve
 
 # Build docs (strict mode, fails on warnings)
 docs-build:
-    uv run --group docs zensical build --clean
+    uv run --python=3.12 --group docs zensical build --clean
 
 # Build the project, useful for checking that packaging is correct
 build:
