@@ -1,6 +1,6 @@
 # log_analyzer
 
-Cервис, формирующий статистический отчет на основании парсинга логов
+A service that generates statistical reports based on log parsing
 
 ## Getting started
 

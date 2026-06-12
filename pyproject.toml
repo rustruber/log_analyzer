@@ -21,7 +21,7 @@ classifiers = [
 license = {text = "MIT"}
 dependencies = [
     "typer >= 0.26.7",
-    "rich"
+    "rich",
 ]
 requires-python = ">= 3.12"
 
@@ -60,9 +60,11 @@ log_analyzer = "log_analyzer.cli:app"
 # Example override: relax a rule for the entire project (uncomment if needed).
 # rules.TY015 = "warn"  # For invalid-argument-type, warn instead of error.
 
+
+
 [tool.ruff]
-line-length = 120 # твоя любимая длина строки
-target-version = "py313"  # твоя версия Python
+line-length = 120
+target-version = "py313"
 
 [tool.ruff.lint]
 select = [
@@ -90,6 +92,7 @@ quote-style = "double"  # использовать двойные кавычки
 branch = true
 parallel = true
 source = ["src/", "tests/"]
+omit = ["src/log_analyzer/__main__.py"]
 
 [tool.coverage.report]
 show_missing = true
