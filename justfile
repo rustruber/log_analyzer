@@ -9,6 +9,7 @@ alias c := clean
 alias d := docs-serve
 alias t := test
 alias tc := type-check
+alias cv := coverage
 
 # Type check the project with ty
 type-check:

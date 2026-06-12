@@ -6,6 +6,8 @@ from log_analyzer import utils
 app = typer.Typer()
 console = Console()
 
+config = {"REPORT_SIZE": 1000, "REPORT_DIR": "./reports", "LOG_DIR": "./log"}
+
 
 # Количество запросов — сколько всего строк с временем ответа
 # Среднее время — сумма всех времён / количество

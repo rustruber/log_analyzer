@@ -1,6 +1,22 @@
 import statistics
 
 
+def read_file_log(path_log_file: str, as_set: bool = False) -> list[str] | set[str]:
+    """Собрать все строки из лога в список (по умолчанию) или множество уникальных."""
+    with open(path_log_file) as f:
+        lines = [line.rstrip("\n") for line in f]
+    return set(lines) if as_set else lines
+
+
+def check_url(path_log_file: str):
+    """Выборка URL адресов из строк."""
+    list_logs = {}
+    set_logs_uniq = read_file_log(path_log_file, True)
+    for set_log in set_logs_uniq:
+        list_logs[set_log[6]] = set_log[-1]
+    return list_logs
+
+
 def parse_log_file(log_file: str) -> list[float]:
     """Прочитать файл и вернуть список времён"""
     times = []
@@ -36,15 +52,3 @@ def do_something_useful(log_file: str, console) -> None:
     metrics = calculate_metrics(times)
     for k, v in metrics.items():
         console.print(f"{k}: {v}")
-
-    # print("Количество запросов (всего обработано запросов):", count)
-    # print("Среднее время:", sum_all / count)
-    # print(f"Медиана (половина пользователей получила ответ быстрее {median} миллисекунды)")
-    #
-    # # Минимум и максимум
-    # print(f"Минимум (самый быстрый запрос): {times[0]}")
-    # print(f"Максимум (самый медленный запрос): {times[-1]}")
-    #
-    # # 95-й перцентиль
-    # time_perc = times[int(0.95 * count)]
-    # print(f"95-й перцентиль (5% самых медленных запросов были медленнее {time_perc} секунд)")
