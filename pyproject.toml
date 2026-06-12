@@ -60,6 +60,8 @@ log_analyzer = "log_analyzer.cli:app"
 # Example override: relax a rule for the entire project (uncomment if needed).
 # rules.TY015 = "warn"  # For invalid-argument-type, warn instead of error.
 
+
+
 [tool.ruff]
 line-length = 120
 target-version = "py313"

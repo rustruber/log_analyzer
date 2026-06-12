@@ -71,17 +71,12 @@ class LogAnalyzer:
                 self.list_logs[url]["times"].append(req_time)
                 self.list_logs[url]["count"] += 1
             else:
-                self.list_logs[url] = {
-                    "count": 1,
-                    "times": [req_time]
-                }
+                self.list_logs[url] = {"count": 1, "times": [req_time]}
 
         # Сортировка по суммарному времени (sum(times))
-        self.list_logs = dict(sorted(
-            self.list_logs.items(),
-            key=lambda item: sum(item[1]["times"]),
-            reverse=self.sorting
-        ))
+        self.list_logs = dict(
+            sorted(self.list_logs.items(), key=lambda item: sum(item[1]["times"]), reverse=self.sorting)
+        )
 
         # Обрезка
         self.list_logs = dict(islice(self.list_logs.items(), self.selected_items))
@@ -153,7 +148,7 @@ class LogAnalyzer:
         for k, v in metrica.items():
             console.print(f"{k}: {v}")
 
-        console.print('\n---------\n')
+        console.print("\n---------\n")
 
         for k, v in islice(self.list_logs.items(), self.get_selected_items()):
             time_sum = sum(v["times"])
@@ -165,4 +160,5 @@ class LogAnalyzer:
             console.print(
                 f"{k}| count: {v['count']} | count_perc: {cp:.3f} | time_avg: {time_avg:.3f} | "
                 f"time_max: {time_max} | time_med: {time_med} | time_perc: {tp:.3f} | "
-                f"time_sum: {time_sum}")
+                f"time_sum: {time_sum}"
+            )
