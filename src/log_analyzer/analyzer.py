@@ -199,6 +199,6 @@ class LogAnalyzer:
             tp = (sum(v["times"]) / self._total_time()) * 100
             console.print(
                 f"{k}| count: {v['count']} | count_perc: {cp:.3f} | time_avg: {time_avg:.3f} | "
-                f"time_max: {time_max} | time_med: {time_med} | time_perc: {tp:.3f} | "
-                f"time_sum: {time_sum}"
+                f"time_max: {time_max:.3f} | time_med: {time_med:.3f} | time_perc: {tp:.3f} | "
+                f"time_sum: {time_sum:.3f}"
             )
