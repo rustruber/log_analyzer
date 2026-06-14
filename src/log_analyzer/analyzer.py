@@ -1,6 +1,7 @@
 """Анализатор логов."""
 
 import json
+import logging
 import re
 import statistics
 from datetime import datetime as dt
@@ -11,6 +12,9 @@ from typing import Any
 from rich.console import Console
 
 console = Console()
+
+
+logger = logging.getLogger(__name__)
 
 
 class LogAnalyzer:
@@ -46,9 +50,9 @@ class LogAnalyzer:
         self._times: list[float] = []
 
         # Кол-во выбираемых элементов для показа.
-        self._selected_items = 10
+        self._selected_items = self.config["REPORT_SIZE"]
 
-        # Сортировка вывода списка 0 - по возрастание, 1 - по убывание
+        # Сортировка вывода списка False - по возрастание, True - по убывание
         self._sorting = True
 
     def _find_latest_date(self) -> dt | None:
@@ -154,6 +158,9 @@ class LogAnalyzer:
         report_dir = Path(self.config["REPORT_DIR"])
         report_dir.mkdir(parents=True, exist_ok=True)
 
+        if self._log_date is None:
+            raise ValueError("Дата лога не установлена")
+
         # Имя файла: report-2025.12.31.html
         report_name = f"report-{self._log_date.strftime('%Y.%m.%d')}.html"
         report_path = report_dir / report_name
@@ -164,7 +171,7 @@ class LogAnalyzer:
             raise FileNotFoundError("Шаблон report.html не найден")
 
         # Читаем шаблон
-        with open(template_path, "r", encoding="utf-8") as f:
+        with open(template_path, encoding="utf-8") as f:
             template = f.read()
 
         # Заменяем $table_json на данные
@@ -174,7 +181,7 @@ class LogAnalyzer:
         with open(report_path, "w", encoding="utf-8") as f:
             f.write(html)
 
-        print(f"Отчёт сохранён: {report_path}")
+        logger.info(f"Отчёт сохранён: {report_path}")
 
     def metrics(self):
         """
@@ -197,24 +204,26 @@ class LogAnalyzer:
         self._read_log()  # собрали все строки из лог-файла
         self._check_url()  # выбрали все URL из строк
         self._parse_log_file()
-        # Сохраняем HTML-отчёт
 
         # Собираем данные для отчёта
         report_data = []
 
         for url, info in self._list_logs.items():
             time_sum = sum(info["times"])
-            report_data.append({
-                "url": url,
-                "count": info["count"],
-                "count_perc": (info["count"] / self._get_total_lines()) * 100,
-                "time_avg": time_sum / info["count"],
-                "time_max": max(info["times"]),
-                "time_med": statistics.median(info["times"]),
-                "time_perc": (time_sum / self._total_time()) * 100,
-                "time_sum": time_sum,
-            })
+            report_data.append(
+                {
+                    "url": url,
+                    "count": info["count"],
+                    "count_perc": (info["count"] / self._get_total_lines()) * 100,
+                    "time_avg": time_sum / info["count"],
+                    "time_max": max(info["times"]),
+                    "time_med": statistics.median(info["times"]),
+                    "time_perc": (time_sum / self._total_time()) * 100,
+                    "time_sum": time_sum,
+                }
+            )
 
+        # Сохраняем HTML-отчёт
         self.save_report(report_data)
 
         metrica = {

@@ -4,6 +4,7 @@ from log_analyzer.analyzer import LogAnalyzer
 def test_parse_log_file():
     # Создаём экземпляр с пустым конфигом
     config = {
+        "REPORT_SIZE": 5,
         "LOG_DIR": "dummy",
         "LOG_PATTERN": r".*",
     }

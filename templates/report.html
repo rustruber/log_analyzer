@@ -37,14 +37,6 @@
 <h1>Log Analyzer Report</h1>
 <table id="report-table" class="tablesorter">
   <thead>
-  <!--  "url": url,-->
-  <!--  "count": info["count"],-->
-  <!--  "count_perc": (info["count"] / self._get_total_lines()) * 100,-->
-  <!--  "time_avg": time_sum / info["count"],-->
-  <!--  "time_max": max(info["times"]),-->
-  <!--  "time_med": statistics.median(info["times"]),-->
-  <!--  "time_perc": (time_sum / self._total_time()) * 100,-->
-  <!--  "time_sum": time_sum,-->
   <tr>
     <th>URL</th>
     <th>Count</th>
@@ -67,7 +59,13 @@
   for (var i = 0; i < tableJson.length; i++) {
     var row = tableJson[i];
     var tr = document.createElement('tr');
-    tr.innerHTML = '<td>' + row.url + '</td>' +
+
+    // Обрезаем URL (если длиннее 50 символов)
+    var fullUrl = row.url;
+    var shortUrl = fullUrl.length > 80 ? fullUrl.substring(0, 47) + '...' : fullUrl;
+
+    tr.innerHTML =
+      '<td><div  title="' + fullUrl + '">' + shortUrl + '</div></td>' +
       '<td>' + row.count + '</td>' +
       '<td>' + row.count_perc.toFixed(3) + '</td>' +
       '<td>' + row.time_avg.toFixed(3) + '</td>' +
@@ -76,7 +74,6 @@
       '<td>' + row.time_perc.toFixed(3) + '</td>' +
       '<td>' + row.time_sum.toFixed(3) + '</td>';
 
-    ;
     tbody.appendChild(tr);
   }
   // Инициализация tablesorter
