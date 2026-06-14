@@ -22,5 +22,5 @@ LOG_PATTERN = 'nginx_access_ui\.log_(\d{8})-\d{6}-[a-f0-9]+(?:\.gz)?$'
 
 ### with a config when launching from the console
 ```bash
-log_analyzer --config /путь/к/config.toml
+log_analyzer --config /path/config.toml
 ```
