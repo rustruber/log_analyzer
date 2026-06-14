@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <!-- choose a theme file -->
+  <link rel="stylesheet" href="../static/theme.default.min.css">
+  <!-- load jQuery and tablesorter scripts -->
+  <script type="text/javascript" src="../static/jquery.min.js"></script>
+  <script type="text/javascript" src="../static/jquery.tablesorter.js"></script>
+
+  <!-- tablesorter widgets (optional) -->
+  <script type="text/javascript" src="../static/jquery.tablesorter.widgets.min.js"></script>
+  <title>Document</title>
+  <style>
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f2f2f2;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Log Analyzer Report</h1>
+<table id="report-table" class="tablesorter">
+  <thead>
+  <!--  "url": url,-->
+  <!--  "count": info["count"],-->
+  <!--  "count_perc": (info["count"] / self._get_total_lines()) * 100,-->
+  <!--  "time_avg": time_sum / info["count"],-->
+  <!--  "time_max": max(info["times"]),-->
+  <!--  "time_med": statistics.median(info["times"]),-->
+  <!--  "time_perc": (time_sum / self._total_time()) * 100,-->
+  <!--  "time_sum": time_sum,-->
+  <tr>
+    <th>URL</th>
+    <th>Count</th>
+    <th>Count Perc</th>
+    <th>Time Avg</th>
+    <th>Time Max</th>
+    <th>Time Med</th>
+    <th>Time Perc</th>
+    <th>Time Sum</th>
+
+  </tr>
+  </thead>
+  <tbody id="report-body">
+  </tbody>
+</table>
+<script>
+  // Данные из Python вставляются сюда
+  var tableJson = $table_json;
+  var tbody = document.getElementById('report-body');
+  for (var i = 0; i < tableJson.length; i++) {
+    var row = tableJson[i];
+    var tr = document.createElement('tr');
+    tr.innerHTML = '<td>' + row.url + '</td>' +
+      '<td>' + row.count + '</td>' +
+      '<td>' + row.count_perc.toFixed(3) + '</td>' +
+      '<td>' + row.time_avg.toFixed(3) + '</td>' +
+      '<td>' + row.time_max.toFixed(3) + '</td>' +
+      '<td>' + row.time_med.toFixed(3) + '</td>' +
+      '<td>' + row.time_perc.toFixed(3) + '</td>' +
+      '<td>' + row.time_sum.toFixed(3) + '</td>';
+
+    ;
+    tbody.appendChild(tr);
+  }
+  // Инициализация tablesorter
+  $('#report-table').tablesorter();
+</script>
+</body>
+</html>

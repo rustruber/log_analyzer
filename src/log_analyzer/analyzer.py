@@ -1,5 +1,6 @@
 """Анализатор логов."""
 
+import json
 import re
 import statistics
 from datetime import datetime as dt
@@ -147,6 +148,34 @@ class LogAnalyzer:
     def _total_time(self) -> float:
         return sum(self._times)
 
+    def save_report(self, report_data: list):
+        """Сохраняет HTML-отчёт."""
+        # Папка для отчётов
+        report_dir = Path(self.config["REPORT_DIR"])
+        report_dir.mkdir(parents=True, exist_ok=True)
+
+        # Имя файла: report-2025.12.31.html
+        report_name = f"report-{self._log_date.strftime('%Y.%m.%d')}.html"
+        report_path = report_dir / report_name
+
+        # Шаблон (лежит в корне проекта)
+        template_path = Path(self.config["TEMPLATE_PATH"])
+        if not template_path.exists():
+            raise FileNotFoundError("Шаблон report.html не найден")
+
+        # Читаем шаблон
+        with open(template_path, "r", encoding="utf-8") as f:
+            template = f.read()
+
+        # Заменяем $table_json на данные
+        html = template.replace("$table_json", json.dumps(report_data, indent=2))
+
+        # Сохраняем
+        with open(report_path, "w", encoding="utf-8") as f:
+            f.write(html)
+
+        print(f"Отчёт сохранён: {report_path}")
+
     def metrics(self):
         """
         Про отчет:
@@ -155,19 +184,39 @@ class LogAnalyzer:
             • count_perc - (количество_запросов_к_URL / общее_число_всех_запросов) * 100
             сколько раз встречается URL, в процентах
             относительно общего числа запросов
-            • time_sum - суммарный $request_time для данного URL’а,
-            абсолютное значение
-            • time_perc - (время_на_URL / общее_время_всех_запросов) * 100
-            суммарный $request_time для данного URL’а, в процентах относительно общего
-            $request_time всех запросов
             • time_avg - средний $request_time для данного URL’а
             • time_max - максимальный $request_time для данного URL’
             • time_med - медианный $request_time для данного URL’
+            • time_perc - (время_на_URL / общее_время_всех_запросов) * 100
+            суммарный $request_time для данного URL’а, в процентах относительно общего
+            $request_time всех запросов
+            • time_sum - суммарный $request_time для данного URL’а,
+            абсолютное значение
         """
         self._find_latest_log()  # установили значение последнего (актуального) лог-файла
         self._read_log()  # собрали все строки из лог-файла
         self._check_url()  # выбрали все URL из строк
         self._parse_log_file()
+        # Сохраняем HTML-отчёт
+
+        # Собираем данные для отчёта
+        report_data = []
+
+        for url, info in self._list_logs.items():
+            time_sum = sum(info["times"])
+            report_data.append({
+                "url": url,
+                "count": info["count"],
+                "count_perc": (info["count"] / self._get_total_lines()) * 100,
+                "time_avg": time_sum / info["count"],
+                "time_max": max(info["times"]),
+                "time_med": statistics.median(info["times"]),
+                "time_perc": (time_sum / self._total_time()) * 100,
+                "time_sum": time_sum,
+            })
+
+        self.save_report(report_data)
+
         metrica = {
             "log_file": self._log_file,  # Путь к файлу логов
             "log_date": self._log_date,  # Дата последнего лога
