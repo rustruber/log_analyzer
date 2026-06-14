@@ -1,23 +1,24 @@
-from typing import Any
+import tomllib
+from pathlib import Path
 
 import typer
-
-from log_analyzer.analyzer import LogAnalyzer
+from log_analyzer.analyzer import LogAnalyzer, DEFAULT_CONFIG
 
 app = typer.Typer()
 
-config: dict[str, Any] = {
-    "REPORT_SIZE": 100,
-    "REPORT_DIR": "./reports",
-    "TEMPLATE_PATH": "./templates/report.html",
-    "LOG_DIR": "./logs",
-    "LOG_PATTERN": r"nginx_access_ui\.log_(\d{8})-\d{6}-[a-f0-9]+(?:\.gz)?$",
-}
-
 
 @app.command()
-def main() -> None:
-    log: LogAnalyzer = LogAnalyzer(config=config)
+def main(
+    config_file: Path | None = typer.Option(None, "--config", help="Путь к файлу конфига")
+):
+    config = DEFAULT_CONFIG.copy()
+
+    if config_file and config_file.exists():
+        with open(config_file, "rb") as f:
+            user_config = tomllib.load(f)
+        config.update(user_config)
+
+    log = LogAnalyzer(config=config)
     log.metrics()
 
 

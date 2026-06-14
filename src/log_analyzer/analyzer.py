@@ -17,6 +17,15 @@ console = Console()
 logger = logging.getLogger(__name__)
 
 
+DEFAULT_CONFIG: dict[str, Any] = {
+    "REPORT_SIZE": 10,
+    "REPORT_DIR": "./reports",
+    "TEMPLATE_PATH": "./templates/report.html",
+    "LOG_DIR": "./logs",
+    "LOG_PATTERN": r"nginx_access_ui\.log_(\d{8})-\d{6}-[a-f0-9]+(?:\.gz)?$",
+}
+
+
 class LogAnalyzer:
     def __init__(
         self,
@@ -174,8 +183,15 @@ class LogAnalyzer:
         with open(template_path, encoding="utf-8") as f:
             template = f.read()
 
+        # Формируем заголовок с датой
+        if self._log_date:
+            title_date = self._log_date.strftime("%d.%m.%Y")
+        else:
+            title_date = ""
+
         # Заменяем $table_json на данные
         html = template.replace("$table_json", json.dumps(report_data, indent=2))
+        html = html.replace("$title_date", title_date)
 
         # Сохраняем
         with open(report_path, "w", encoding="utf-8") as f:

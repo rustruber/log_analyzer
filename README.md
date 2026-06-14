@@ -27,21 +27,31 @@ pip install log-analyzer-cli
 ```
 
 ## Использование
+
+### Опции
 ```bash
-log_analyzer /path/to/nginx/access.log
+log_analyzer --help
 ```
-Пример вывода:
 
-```text
-count: 40                   # Всего кол-во запросов в файле лога
-mean: 13.79435              # Среднее время
-median: 0.14100000000000001 # Медиана
-perc_95: 60.077             # 95-й перцентиль
-min: 0.001                  # Минимум
-max: 60.083                 # Максимум
-
-
+### с конфигом по-умолчанию
+```bash
+log_analyzer
 ```
+
+## Файл конфига, как пример (config.toml):
+```bash
+REPORT_SIZE = 10
+REPORT_DIR = "./reports"
+TEMPLATE_PATH = "./templates/report.html"
+LOG_DIR = "./logs"
+LOG_PATTERN = 'nginx_access_ui\.log_(\d{8})-\d{6}-[a-f0-9]+(?:\.gz)?$'
+```
+
+### с конфигом при запуске в консоли
+```bash
+log_analyzer --config /путь/к/файлу.toml
+```
+
 
 ## Документация
 Документация собирается с помощью Zensical и автоматически публикуется на GitHub Pages.
