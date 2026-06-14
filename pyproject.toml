@@ -8,17 +8,17 @@ version = "0.2.0"
 description = "Cервис, формирующий статистический отчет на основании парсинга логов"
 readme = "README.md"
 authors = [
-  {name = "setter", email = "lphp@mail.ru"}
+    { name = "setter", email = "lphp@mail.ru" }
 ]
 maintainers = [
-  {name = "setter", email = "lphp@mail.ru"}
+    { name = "setter", email = "lphp@mail.ru" }
 ]
 classifiers = [
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
     "Typing :: Typed",
 ]
-license = {text = "MIT"}
+license = { text = "MIT" }
 dependencies = [
     "typer >= 0.26.7",
     "rich",
@@ -68,21 +68,21 @@ target-version = "py313"
 
 [tool.ruff.lint]
 select = [
-    "E",    # ошибки pycodestyle
-    "W",    # предупреждения pycodestyle
-    "F",    # ошибки Pyflakes (неиспользуемые импорты, переменные)
-    "I",    # сортировка импортов (isort)
-    "UP",   # предложения по обновлению синтаксиса (pyupgrade)
-    "B",    # поиск сомнительных конструкций (flake8-bugbear)
-    "C4",   # улучшения для генераторов списков и словарей
-    "T20",  # запрет на отладочные print()
-    "T10",  # запрет на отладочный assert (на проде)
+    "E", # ошибки pycodestyle
+    "W", # предупреждения pycodestyle
+    "F", # ошибки Pyflakes (неиспользуемые импорты, переменные)
+    "I", # сортировка импортов (isort)
+    "UP", # предложения по обновлению синтаксиса (pyupgrade)
+    "B", # поиск сомнительных конструкций (flake8-bugbear)
+    "C4", # улучшения для генераторов списков и словарей
+    "T20", # запрет на отладочные print()
+    "T10", # запрет на отладочный assert (на проде)
 ]
 
 # От каких правил можно отказаться
 ignore = [
-    "E501",  # не ругаться на слишком длинные строки (этим займется форматтер)
-    "B008",  # разрешить вызовы функций в аргументах по умолчанию
+    "E501", # не ругаться на слишком длинные строки (этим займется форматтер)
+    "B008", # разрешить вызовы функций в аргументах по умолчанию
 ]
 
 [tool.ruff.format]
