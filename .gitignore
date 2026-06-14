@@ -53,4 +53,4 @@ IDE files
 .idea/
 .vscode/
 
-src/log_analyzer/logs/
+logs/

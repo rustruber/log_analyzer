@@ -1,7 +1,11 @@
 """Анализатор логов."""
 
+import re
 import statistics
+import typing
+from datetime import datetime as dt
 from itertools import islice
+from pathlib import Path
 
 from rich.console import Console
 
@@ -11,54 +15,84 @@ console = Console()
 class LogAnalyzer:
     def __init__(
         self,
-        log_file: str,
+        config: typing.Dict[str, typing.Any],
     ):
+        self._log_date = None
+        self.config = config
+
+        # скомпилированный в объект шаблон имени файла.
+        self._log_pattern = re.Pattern
+
         # Путь к файлу логов.
-        self.log_file = log_file
+        self._log_file: str
+
+        self._log_dir = Path(self.config["LOG_DIR"])
+
+        self._log_pattern = re.compile(self.config["LOG_PATTERN"])
 
         # Все строки из лога в список
-        self.lines: list[str] = []
+        self._lines: list[str] = []
 
         # Выборка URL адресов из лога
-        self.list_logs = {}
+        self._list_logs = {}
 
         # Общее кол-во запросов в файле.
-        self.total_lines = 0
-
-        # Сколько раз встречается URL, абсолютное значение.
-        self.count = 0.0
+        self._total_lines = 0
 
         # Список времён.
-        self.times: list[float] = []
-
-        # Суммарный $request_time для данного URL’а,
-        # в процентах относительно общего $request_time всех
-        # запросов (Часть / Целое * 100).
-        self.count_perc = 0.0
-
-        # Средний $request_time для данного URL’а.
-        self.time_avg = 0.0
-
-        # Максимальный $request_time для данного URL’а.
-        self.time_max = 0.0
-
-        # Медиана $request_time для данного URL’а.
-        self.time_med = 0.0
+        self._times: list[float] = []
 
         # Кол-во выбираемых элементов для показа.
-        self.selected_items = 10
+        self._selected_items = 10
 
         # Сортировка вывода списка 0 - по возрастание, 1 - по убывание
-        self.sorting = True
+        self._sorting = True
 
-    def read_log(self):
+    def _find_latest_date(self) -> typing.Optional[dt]:
+        """Найти последнюю дату."""
+        latest_date = None
+        for file in self._log_dir.iterdir():
+            match = self._log_pattern.match(file.name)
+            if match:
+                date_str = match.group(1)
+                file_date = dt.strptime(date_str, "%Y%m%d")
+                if latest_date is None or file_date > latest_date:
+                    latest_date = file_date
+        return latest_date
+
+    def _find_latest_log(self):
+        """Найти последний лог-файл. Инициализировать атрибуты."""
+        latest_file = None
+        latest_date = None
+
+        for file in self._log_dir.iterdir():
+            match = self._log_pattern.match(file.name)
+            if not match:
+                continue
+
+            # Извлекаем дату из первой группы
+            date_str = match.group(1)  # "20170630"
+            try:
+                file_date = dt.strptime(date_str, "%Y%m%d")
+            except ValueError:
+                continue
+
+            # Сравниваем
+            if latest_date is None or file_date > latest_date:
+                latest_date = file_date
+                latest_file = file
+
+        self._log_file = latest_file
+        self._log_date = latest_date
+
+    def _read_log(self):
         """Собрать все строки из лога в список (по умолчанию)."""
-        with open(self.log_file) as f:
-            self.lines = [line.rstrip("\n") for line in f]
+        with open(self._log_file) as f:
+            self._lines = [line.rstrip("\n") for line in f]
 
-    def check_url(self):
+    def _check_url(self):
         """Выборка URL и времён из строк логов."""
-        set_logs_uniq = self.lines
+        set_logs_uniq = self._lines
         for set_log in set_logs_uniq:
             parts = set_log.split()
             url = parts[6]
@@ -67,49 +101,42 @@ class LogAnalyzer:
             except (ValueError, IndexError):
                 continue
 
-            if url in self.list_logs:
-                self.list_logs[url]["times"].append(req_time)
-                self.list_logs[url]["count"] += 1
+            if url in self._list_logs:
+                self._list_logs[url]["times"].append(req_time)
+                self._list_logs[url]["count"] += 1
             else:
-                self.list_logs[url] = {"count": 1, "times": [req_time]}
+                self._list_logs[url] = {"count": 1, "times": [req_time]}
 
         # Сортировка по суммарному времени (sum(times))
-        self.list_logs = dict(
-            sorted(self.list_logs.items(), key=lambda item: sum(item[1]["times"]), reverse=self.sorting)
+        self._list_logs = dict(
+            sorted(self._list_logs.items(), key=lambda item: sum(item[1]["times"]), reverse=self._sorting)
         )
 
         # Обрезка
-        self.list_logs = dict(islice(self.list_logs.items(), self.selected_items))
+        self._list_logs = dict(islice(self._list_logs.items(), self._selected_items))
 
-    def get_count(self):
+    def _get_count(self):
         """Получить сколько раз встречается URL в выборки лога."""
-        return len(self.list_logs)
+        return len(self._list_logs)
 
-    def sum_line(self):
+    def _sum_line(self):
         """Посчитать кол-во запросов в файле лога."""
-        self.total_lines = len(self.lines)
+        self._total_lines = len(self._lines)
 
-    def get_total_lines(self) -> int:
+    def _get_total_lines(self) -> int:
         """Получить общее кол-во строк в файле лога."""
-        self.sum_line()
-        return self.total_lines
+        self._sum_line()
+        return self._total_lines
 
-    def parse_log_file(self):
+    def _parse_log_file(self):
         """Вернуть список времён."""
-        for line in self.lines:
+        for line in self._lines:
             parts = line.split()
             time = parts[-1]
-            self.times.append(float(time))
+            self._times.append(float(time))
 
-    def total_time(self) -> float:
-        return sum(self.times)
-
-    def get_selected_items(self):
-        return self.selected_items
-
-    def get_sorting(self):
-        """Направление сортировки вывода списка URL-адресов."""
-        return self.sorting
+    def _total_time(self) -> float:
+        return sum(self._times)
 
     def metrics(self):
         """
@@ -128,21 +155,21 @@ class LogAnalyzer:
             • time_max - максимальный $request_time для данного URL’
             • time_med - медианный $request_time для данного URL’
         """
-
-        self.read_log()  # собрали все строки из лог-файла
-        self.check_url()  # выбрали все URL из строк
-        self.parse_log_file()
+        self._find_latest_log()  # установили значение последнего (актуального) лог-файла
+        self._read_log()  # собрали все строки из лог-файла
+        self._check_url()  # выбрали все URL из строк
+        self._parse_log_file()
         metrica = {
-            "total_lines": self.get_total_lines(),  # Общее кол-во запросов в файле лога
-            "selected_items": self.get_selected_items(),  # Кол-во выбираемых элементов
-            "sorting": self.get_sorting(),
-            "count": self.get_count(),  # Сколько раз встречается URL, абсолютное значение
-            "count_perc": self.count_perc,
-            "mean": statistics.mean(self.times),
-            "median": statistics.median(self.times),
-            "perc_95": self.times[int(0.95 * self.get_count())],
-            "min": self.times[0],
-            "max": self.times[-1],
+            "log_file": self._log_file,
+            "total_lines": self._get_total_lines(),  # Общее кол-во запросов в файле лога
+            "selected_items": self._selected_items,  # Кол-во выбираемых элементов
+            "sorting": self._sorting,
+            "count": self._get_count(),  # Сколько раз встречается URL, абсолютное значение
+            "mean": statistics.mean(self._times),
+            "median": statistics.median(self._times),
+            "perc_95": self._times[int(0.95 * self._get_count())],
+            "min": self._times[0],
+            "max": self._times[-1],
         }
 
         for k, v in metrica.items():
@@ -150,13 +177,13 @@ class LogAnalyzer:
 
         console.print("\n---------\n")
 
-        for k, v in islice(self.list_logs.items(), self.get_selected_items()):
+        for k, v in islice(self._list_logs.items(), self._selected_items):
             time_sum = sum(v["times"])
             time_avg = time_sum / v["count"]
             time_max = max(v["times"])
             time_med = statistics.median(v["times"])
-            cp = (v["count"] / self.get_total_lines()) * 100
-            tp = (sum(v["times"]) / self.total_time()) * 100
+            cp = (v["count"] / self._get_total_lines()) * 100
+            tp = (sum(v["times"]) / self._total_time()) * 100
             console.print(
                 f"{k}| count: {v['count']} | count_perc: {cp:.3f} | time_avg: {time_avg:.3f} | "
                 f"time_max: {time_max} | time_med: {time_med} | time_perc: {tp:.3f} | "
