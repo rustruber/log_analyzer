@@ -2,10 +2,10 @@
 
 import re
 import statistics
-import typing
 from datetime import datetime as dt
 from itertools import islice
 from pathlib import Path
+from typing import Any
 
 from rich.console import Console
 
@@ -15,16 +15,18 @@ console = Console()
 class LogAnalyzer:
     def __init__(
         self,
-        config: typing.Dict[str, typing.Any],
+        config: dict[str, Any],
     ):
-        self._log_date = None
         self.config = config
 
         # скомпилированный в объект шаблон имени файла.
-        self._log_pattern = re.Pattern
+        self._log_pattern = re.compile(config["LOG_PATTERN"])
+
+        # Дата последнего лога
+        self._log_date: dt | None = None
 
         # Путь к файлу логов.
-        self._log_file: str
+        self._log_file: Path | None = None
 
         self._log_dir = Path(self.config["LOG_DIR"])
 
@@ -48,7 +50,7 @@ class LogAnalyzer:
         # Сортировка вывода списка 0 - по возрастание, 1 - по убывание
         self._sorting = True
 
-    def _find_latest_date(self) -> typing.Optional[dt]:
+    def _find_latest_date(self) -> dt | None:
         """Найти последнюю дату."""
         latest_date = None
         for file in self._log_dir.iterdir():
@@ -62,8 +64,8 @@ class LogAnalyzer:
 
     def _find_latest_log(self):
         """Найти последний лог-файл. Инициализировать атрибуты."""
-        latest_file = None
-        latest_date = None
+        latest_file: Path | None = None
+        latest_date: dt | None = None
 
         for file in self._log_dir.iterdir():
             match = self._log_pattern.match(file.name)
@@ -87,6 +89,10 @@ class LogAnalyzer:
 
     def _read_log(self):
         """Собрать все строки из лога в список (по умолчанию)."""
+        if self._log_file is None:
+            self._find_latest_log()
+        if self._log_file is None:
+            raise FileNotFoundError("Лог-файл не найден")
         with open(self._log_file) as f:
             self._lines = [line.rstrip("\n") for line in f]
 
@@ -132,8 +138,11 @@ class LogAnalyzer:
         """Вернуть список времён."""
         for line in self._lines:
             parts = line.split()
-            time = parts[-1]
-            self._times.append(float(time))
+            try:
+                time = float(parts[-1])
+            except (ValueError, IndexError):
+                continue  # пропускаем битые строки
+            self._times.append(time)
 
     def _total_time(self) -> float:
         return sum(self._times)
@@ -160,16 +169,20 @@ class LogAnalyzer:
         self._check_url()  # выбрали все URL из строк
         self._parse_log_file()
         metrica = {
-            "log_file": self._log_file,
+            "log_file": self._log_file,  # Путь к файлу логов
+            "log_date": self._log_date,  # Дата последнего лога
             "total_lines": self._get_total_lines(),  # Общее кол-во запросов в файле лога
             "selected_items": self._selected_items,  # Кол-во выбираемых элементов
-            "sorting": self._sorting,
+            "sorting": self._sorting,  # Сортировка вывода списка 0 - по возрастание, 1 - по убывание
             "count": self._get_count(),  # Сколько раз встречается URL, абсолютное значение
-            "mean": statistics.mean(self._times),
+            "mean": statistics.mean(self._times),  # Среднее время ответа сервера в секундах.
+            # median - показывает, что большинство запросов (50%) укладываются в
+            # statistics.median(self._times) мс.
             "median": statistics.median(self._times),
+            # 95% запросов быстрее perc_95 мс.
             "perc_95": self._times[int(0.95 * self._get_count())],
-            "min": self._times[0],
-            "max": self._times[-1],
+            "min": min(self._times),
+            "max": max(self._times),
         }
 
         for k, v in metrica.items():
