@@ -1,41 +1,27 @@
-# """Tests for `log_analyzer` package."""
-
-"""Заглушка для тестов, пока основные не написаны."""
+from log_analyzer.analyzer import LogAnalyzer
 
 
-def test_dummy():
-    """Пустой тест-заглушка, всегда проходит."""
-    assert True
+def test_parse_log_file():
+    # Создаём экземпляр с пустым конфигом
+    config = {
+        "REPORT_SIZE": 5,
+        "LOG_DIR": "dummy",
+        "LOG_PATTERN": r".*",
+    }
+    analyzer = LogAnalyzer(config)
 
+    # Подменяем _lines тестовыми данными
+    analyzer._lines = [
+        '1.140.178.176 - - [29/Jun/2017:08:13:51 +0300] "GET /test HTTP/1.1" 200 22 "-" "-" "-" "-" "-" 0.123',
+        '1.140.178.176 - - [29/Jun/2017:08:13:52 +0300] "GET /test2 HTTP/1.1" 200 22 "-" "-" "-" "-" "-" 0.456',
+        "битая строка без времени",
+        '1.140.178.176 - - [29/Jun/2017:08:13:53 +0300] "GET /test3 HTTP/1.1" 200 22 "-" "-" "-" "-" "-" нечисло',
+    ]
+    analyzer._times = []  # очищаем перед вызовом
 
-# from pathlib import Path
-#
-#
-# def test_calculate_metrics():
-#     """Проверяет, что calculate_metrics правильно считает метрики."""
-#     times = [0.1, 0.2, 0.3, 0.4, 0.5, 1.0, 2.0, 3.0, 4.0, 5.0]
-#     result = calculate_metrics(times)
-#
-#     assert result["count"] == 10
-#     assert result["mean"] == sum(times) / 10
-#     assert result["median"] == (0.5 + 1.0) / 2
-#     assert result["perc_95"] == 5.0
-#     assert result["min"] == 0.1
-#     assert result["max"] == 5.0
-#
-#
-# def test_read_file_log_list():
-#     """Проверяем, что функция возвращает весь список логов из файла по-умолчанию."""
-#     test_dir = Path(__file__).parent
-#     log_path = test_dir / "pu.txt"
-#     result = read_file_log(str(log_path))
-#     assert len(result) == 40
-#
-#
-# def test_read_file_log_set():
-#     """Проверяем, что функция возвращает уникальное множество логов из файла, с флагом True."""
-#     test_dir = Path(__file__).parent
-#     log_path = test_dir / "pu.txt"
-#     result = read_file_log(str(log_path), True)
-#     assert len(result) == 39
-#     assert isinstance(result, set)
+    # Вызываем тестируемый метод
+    analyzer._parse_log_file()
+
+    # Проверяем результат
+    assert analyzer._times == [0.123, 0.456]
+    assert len(analyzer._times) == 2
