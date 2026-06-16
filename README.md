@@ -42,7 +42,7 @@ LOG_DIR = "/Path to the config file/logs"
 LOG_PATTERN = 'nginx_access_ui\.log_(\d{8})-\d{6}-[a-f0-9]+(?:\.gz)?$'
 ```
 
-### С конфигом при запуске в консоли
+### Указать конфиг-файл
 ```bash
 log_analyzer --config /путь/к/файлу.toml
 ```
