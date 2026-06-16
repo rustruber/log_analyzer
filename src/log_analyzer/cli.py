@@ -2,18 +2,21 @@ import tomllib
 from pathlib import Path
 
 import typer
-from log_analyzer import __version__
+
 from log_analyzer.analyzer import DEFAULT_CONFIG, LogAnalyzer
 
 app = typer.Typer()
 
 
 @app.command()
-def main(config_file: Path | None = typer.Option(None, "--config", help="Path to the config file"),
-         version: bool = typer.Option(False, "--version", help="Show version and exit")):
+def main(
+    config_file: Path | None = typer.Option(None, "--config", help="Path to the config file"),
+    version: bool = typer.Option(False, "--version", help="Show version and exit"),
+):
 
     if version:
         from log_analyzer import __version__
+
         typer.echo(f"log-analyzer-cli {__version__}")
         raise typer.Exit()
 
@@ -22,7 +25,6 @@ def main(config_file: Path | None = typer.Option(None, "--config", help="Path to
         typer.echo("Usage: log_analyzer --config <path_to_config.toml>")
         typer.echo("       log_analyzer --version")
         raise typer.Exit()
-
 
     config = DEFAULT_CONFIG.copy()
 

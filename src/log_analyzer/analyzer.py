@@ -149,7 +149,6 @@ class LogAnalyzer:
         self._sum_line()
         return self._total_lines
 
-
     def _parse_log_file(self):
         """Вернуть список времён."""
         for line in self._lines:
@@ -169,8 +168,8 @@ class LogAnalyzer:
         try:
             with resources.path("log_analyzer.templates", "report.html") as template_path:
                 template = template_path.read_text(encoding="utf-8")
-        except FileNotFoundError:
-            raise FileNotFoundError("Шаблон report.html не найден внутри пакета log_analyzer.templates")
+        except FileNotFoundError as err:
+            raise FileNotFoundError("Шаблон report.html не найден внутри пакета log_analyzer.templates") from err
 
         # Папка для отчётов
         report_dir = Path(self.config["REPORT_DIR"])
@@ -184,10 +183,7 @@ class LogAnalyzer:
         report_path = report_dir / report_name
 
         # Формируем заголовок с датой
-        if self._log_date:
-            title_date = self._log_date.strftime("%d.%m.%Y")
-        else:
-            title_date = ""
+        title_date = self._log_date.strftime("%d.%m.%Y") if self._log_date else ""
 
         # Заменяем $table_json на данные
         html = template.replace("$table_json", json.dumps(report_data, indent=2))
