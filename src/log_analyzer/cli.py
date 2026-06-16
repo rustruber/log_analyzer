@@ -17,12 +17,24 @@ def main(config_file: Path | None = typer.Option(None, "--config", help="Path to
         typer.echo(f"log-analyzer-cli {__version__}")
         raise typer.Exit()
 
+    # Если нет конфига и нет других параметров — показать помощь
+    if not config_file:
+        typer.echo("Usage: log_analyzer --config <path_to_config.toml>")
+        typer.echo("       log_analyzer --version")
+        raise typer.Exit()
+
+
     config = DEFAULT_CONFIG.copy()
 
     if config_file and config_file.exists():
         with open(config_file, "rb") as f:
             user_config = tomllib.load(f)
         config.update(user_config)
+
+    # Если пользователь запускает без конфига — показать помощь
+    if not config_file:
+        typer.echo("Usage: log_analyzer --config /path/to/config.toml")
+        raise typer.Exit()
 
     log = LogAnalyzer(config=config)
     log.metrics()

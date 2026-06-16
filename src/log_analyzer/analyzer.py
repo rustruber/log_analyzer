@@ -149,6 +149,7 @@ class LogAnalyzer:
         self._sum_line()
         return self._total_lines
 
+
     def _parse_log_file(self):
         """Вернуть список времён."""
         for line in self._lines:

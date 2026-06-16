@@ -43,7 +43,7 @@ log_analyzer
 ```bash
 REPORT_SIZE = 10
 REPORT_DIR = "./reports"
-LOG_DIR = "./logs"
+LOG_DIR = "/Path to the config file/logs"
 LOG_PATTERN = 'nginx_access_ui\.log_(\d{8})-\d{6}-[a-f0-9]+(?:\.gz)?$'
 ```
 
