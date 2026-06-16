@@ -54,10 +54,13 @@ just docs-build   # static site in `site/`
 | PyPI package name (what you `pip install`) | `log-analyzer-cli` |
 | CLI command (what you type in terminal) | `log_analyzer` (with underscore!) |
 
-Example:
+### Install
 ```bash
 pip install log-analyzer-cli
-log_analyzer /var/log/nginx/access.log
+```
+### Using
+```bash
+log_analyzer --config /path/config.toml
 ```
 
 ## Making a release

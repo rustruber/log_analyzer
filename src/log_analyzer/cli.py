@@ -11,6 +11,7 @@ app = typer.Typer()
 @app.command()
 def main(config_file: Path | None = typer.Option(None, "--config", help="Путь к файлу конфига"),
          version: bool = typer.Option(False, "--version", help="Show version and exit")):
+
     if version:
         from log_analyzer import __version__
         typer.echo(f"log-analyzer-cli {__version__}")
