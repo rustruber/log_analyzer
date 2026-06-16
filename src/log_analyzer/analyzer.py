@@ -167,7 +167,7 @@ class LogAnalyzer:
         # Читаем шаблон из установленного пакета
         try:
             with resources.path("log_analyzer.templates", "report.html") as template_path:
-                template_path.read_text(encoding="utf-8")
+                template = template_path.read_text(encoding="utf-8")
         except FileNotFoundError:
             raise FileNotFoundError("Шаблон report.html не найден внутри пакета log_analyzer.templates")
 

@@ -9,7 +9,7 @@ app = typer.Typer()
 
 
 @app.command()
-def main(config_file: Path | None = typer.Option(None, "--config", help="Путь к файлу конфига"),
+def main(config_file: Path | None = typer.Option(None, "--config", help="Path to the config file"),
          version: bool = typer.Option(False, "--version", help="Show version and exit")):
 
     if version:
