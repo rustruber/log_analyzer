@@ -118,3 +118,4 @@ uv run pytest
 
 _Проект создан в 2026 году._
 
+## Test: Branch protection is working!
