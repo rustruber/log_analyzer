@@ -119,6 +119,7 @@ default-groups = ["dev"]
 [tool.hatch.build.targets.wheel]
 packages = ["src/log_analyzer"]
 
-
+[tool.setuptools.package-data]
+log_analyzer = ["templates/*.html"]
 
 

@@ -5,6 +5,7 @@ import logging
 import re
 import statistics
 from datetime import datetime as dt
+from importlib import resources
 from itertools import islice
 from pathlib import Path
 from typing import Any
@@ -163,6 +164,13 @@ class LogAnalyzer:
 
     def save_report(self, report_data: list):
         """Сохраняет HTML-отчёт."""
+        # Читаем шаблон из установленного пакета
+        try:
+            with resources.path("log_analyzer.templates", "report.html") as template_path:
+                template = template_path.read_text(encoding="utf-8")
+        except FileNotFoundError as err:
+            raise FileNotFoundError("Шаблон report.html не найден внутри пакета log_analyzer.templates") from err
+
         # Папка для отчётов
         report_dir = Path(self.config["REPORT_DIR"])
         report_dir.mkdir(parents=True, exist_ok=True)
@@ -174,20 +182,8 @@ class LogAnalyzer:
         report_name = f"report-{self._log_date.strftime('%Y.%m.%d')}.html"
         report_path = report_dir / report_name
 
-        # Шаблон (лежит в корне проекта)
-        template_path = Path(self.config["TEMPLATE_PATH"])
-        if not template_path.exists():
-            raise FileNotFoundError("Шаблон report.html не найден")
-
-        # Читаем шаблон
-        with open(template_path, encoding="utf-8") as f:
-            template = f.read()
-
         # Формируем заголовок с датой
-        if self._log_date:
-            title_date = self._log_date.strftime("%d.%m.%Y")
-        else:
-            title_date = ""
+        title_date = self._log_date.strftime("%d.%m.%Y") if self._log_date else ""
 
         # Заменяем $table_json на данные
         html = template.replace("$table_json", json.dumps(report_data, indent=2))
